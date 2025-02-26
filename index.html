@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazing Chinese</title>
+    <style>
+        /* Основные стили */
+        body {
+            font-family: Arial, sans-serif;
+            transition: background 0.3s, color 0.3s;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Фон с анимацией */
+        .background {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.2), transparent);
+            animation: moveBackground 10s infinite alternate ease-in-out;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: scale(1) translateY(0); }
+            100% { transform: scale(1.1) translateY(-20px); }
+        }
+
+        /* Светлая тема */
+        .light-theme {
+            background: linear-gradient(135deg, #f0f4ff, #ffffff);
+            color: #333;
+        }
+
+        /* Тёмная тема */
+        .dark-theme {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #f0f0f0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .dark-theme header {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        button, select {
+            padding: 5px 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        #quiz {
+            margin-top: 20px;
+        }
+
+        .answer {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="background"></div>
+
+    <header>
+        <h1>Amazing Chinese</h1>
+        <div class="controls">
+            <button id="theme-toggle">Переключить тему</button>
+            <select id="language-select">
+                <option value="ru">Русский</option>
+                <option value="tj">Тоҷикӣ</option>
+                <option value="tr">Türkçe</option>
+                <option value="ar">العربية</option>
+                <option value="en" selected>English</option>
+            </select>
+        </div>
+    </header>
+
+    <main>
+        <h2 id="title">Изучение китайских иероглифов</h2>
+        <div id="characters">
+            <p>你 (nǐ) – Ты</p>
+            <p>好 (hǎo) – Хорошо</p>
+            <p>学 (xué) – Учиться</p>
+            <p>习 (xí) – Практиковаться</p>
+        </div>
+
+        <h2>Тест: выбери правильный перевод</h2>
+        <div id="quiz">
+            <p id="question">?</p>
+            <button class="answer"></button>
+            <button class="answer"></button>
+            <button class="answer"></button>
+            <button class="answer"></button>
+            <p id="result"></p>
+        </div>
+    </main>
+
+    <script>
+        // Переключение темы
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            document.body.classList.toggle('light-theme');
+        });
+
+        // Переводы заголовка
+        const translations = {
+            "ru": "Изучение китайских иероглифов",
+            "tj": "Омӯхтани иероглифҳои чинӣ",
+            "tr": "Çince karakterleri öğrenmek",
+            "ar": "تعلم الحروف الصينية",
+            "en": "Learning Chinese Characters"
+        };
+
+        document.getElementById('language-select').addEventListener('change', (event) => {
+            document.getElementById('title').textContent = translations[event.target.value];
+        });
+
+        // Тестирование
+        const quizData = [
+            { character: "你", correct: "Ты", options: ["Ты", "Он", "Она", "Мы"] },
+            { character: "好", correct: "Хорошо", options: ["Плохо", "Хорошо", "Плохо", "Он"] },
+            { character: "学", correct: "Учиться", options: ["Учиться", "Играть", "Говорить", "Писать"] },
+            { character: "习", correct: "Практиковаться", options: ["Читать", "Практиковаться", "Смотреть", "Готовить"] }
+        ];
+
+        let currentQuestion = 0;
+        const questionElement = document.getElementById('question');
+        const answerButtons = document.querySelectorAll('.answer');
+        const resultElement = document.getElementById('result');
+
+        function loadQuestion() {
+            const question = quizData[currentQuestion];
+            questionElement.textContent = `Что означает: ${question.character}?`;
+            let shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+
+            answerButtons.forEach((button, index) => {
+                button.textContent = shuffledOptions[index];
+                button.onclick = () => checkAnswer(shuffledOptions[index]);
+            });
+        }
+
+        function checkAnswer(answer) {
+            if (answer === quizData[currentQuestion].correct) {
+                resultElement.textContent = "Правильно!";
+            } else {
+                resultElement.textContent = "Ошибка!";
+            }
+            setTimeout(() => {
+                resultElement.textContent = "";
+                currentQuestion = (currentQuestion + 1) % quizData.length;
+                loadQuestion();
+            }, 1000);
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
